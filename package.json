@@ -1,0 +1,23 @@
+{
+  "name": "vchat",
+  "version": "1.0.0",
+  "description": "A demo using node.js and sockets.io.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betatest25dev/chat.git"
+  },
+  "author": "Beta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/betatest25dev/chat/issues"
+  },
+  "engines": {
+    "node": "8.6.0"
+  },
+  "homepage": "https://github.com/betatest25dev/chat#readme"
+}
