@@ -2,10 +2,16 @@
 <html>
     <head>
         <title>Hangouts</title>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>  
         <script src="socket.io/socket.io.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     </head>
     <body>
+        <h1>Test</h1>
+
         <!-- Receiver -->
         <img src="" id="receiver">
 
@@ -21,7 +27,7 @@
                 var c_width = 100;
                 var c_height = 200;
 
-                var SERVER_URL = 'http://example.org:8081';
+                var SERVER_URL = 'http://192.168.100.124:8081';
 
                 // Setup elements
                 var receiver = document.getElementById('receiver');
@@ -42,7 +48,7 @@
 
                 function log(message) {
                     // Log messages can be emitted to the server for debugging
-                    //socket.emit('info', message);
+                    socket.emit('info', message);
                     $('#log').append(message);
                     console.log(message);
                 }
@@ -61,15 +67,31 @@
                 if (navigator.getUserMedia) {
                     log('Browser capable of streaming media');
 
-                    navigator.getUserMedia('video', function(stream) { video.src = stream; }, function(error) { log('Capture error ' + error); });
+                    // navigator.getUserMedia('video', function(stream) { video.src = stream; }, function(error) { log('Capture error ' + error); });
 
-                    function draw(v, ctx, w, h) {
-                        ctx.drawImage(v, 0, 0, w, h);
-                        socket.emit('data', canvas.toDataURL("image/png"));
-                        setTimeout(function() { draw(v, ctx, w, h); }, 500);
-                    }
-                    draw(video, ctx, c_width, c_height);
+                    var p = navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+
+                    p.then(function(mediaStream) {
+                    var video = document.querySelector('video');
+                    video.src = window.URL.createObjectURL(mediaStream);
+                    video.onloadedmetadata = function(e) {
+                        function draw(v, ctx, w, h) {
+                            ctx.drawImage(v, 0, 0, w, h);
+                            socket.emit('data', canvas.toDataURL("image/png"));
+                            setTimeout(function() { 
+                                draw(v, ctx, w, h); }, 500);
+                            }
+                            draw(video, ctx, c_width, c_height);
+                    };
+                    });
+
+                    p.catch(function(err) { 
+                        log(err.name); 
+                    }); // always check for errors at the end.
+
+                    
                 } else {
+                    log('Browser not capable of streaming media');
                     $(canvas).hide();
                     $(video).hide();
                 }
